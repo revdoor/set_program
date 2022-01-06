@@ -60,6 +60,28 @@ class CardDeck {
         Collections.sort(list);
         list.toArray(this.deck);
     }
+
+    boolean existSET() {
+        if (this.usedCardNo == 81) {
+            return false;
+        }
+
+        for(int i = usedCardNo; i < 79; i++) {
+            for(int j = i+1; j < 80; j++) {
+                for(int k = j+1; k < 81; k++) {
+                    if (isSet(this.deck[i], this.deck[j], this.deck[k])) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    boolean remainsUnusedCard() {
+        return this.usedCardNo + 12 < 81;
+    }
 }
 
 class EmptyCard extends Card {
@@ -152,6 +174,19 @@ class GameField {
         this.cardOnField[idx].status = IdentifierConstant.STATUS_USED;
         this.cardOnField[idx] = this.emptyCards[idx];
     }
+
+    boolean existSET() {
+        for (int i = 0; i < 10; i++) {
+            for (int j = i+1; j < 11; j++) {
+                for (int k = j+1; k < 12; k++) {
+                    if (isSet(this.cardOnField[i], this.cardOnField[j], this.cardOnField[k])) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
 }
 
 class SetGame {
@@ -190,7 +225,10 @@ class SetGame {
         }
 
         goodSETDeclaration(player_no);
-        refillCard(pos1, pos2, pos3);
+        if (this.gameDeck.existSET()) {
+            removeCards(pos1, pos2, pos3);
+            refillCards(pos1, pos2, pos3);
+        }
     }
 
     void badSETDeclaration(int player_no) {
@@ -201,17 +239,25 @@ class SetGame {
         this.players[player_no].score += 1;
     }
 
-    void refillCard(Pos pos1, Pos pos2, Pos pos3) {
+    void removeCards(Pos pos1, Pos pos2, Pos pos3) {
         this.field.removeCard(pos1);
         this.field.removeCard(pos2);
         this.field.removeCard(pos3);
 
         this.gameDeck.usedCardNo += 3;
-        this.gameDeck.shuffleDeck();
+    }
 
-        for (int i = 0; i < 3; i++) {
-            int idx = i + this.gameDeck.usedCardNo;
-            this.field.putCard(toPos(idx), this.gameDeck.deck[idx]);
+    void refillCards(Pos pos1, Pos pos2, Pos pos3) {
+        Pos[] posArr = new Pos[]{pos1, pos2, pos3};
+        if (this.gameDeck.remainsUnusedCard()) {
+            do {
+                this.gameDeck.shuffleDeck();
+
+                for (int i = 0; i < 3; i++) {
+                    int idx = i + this.gameDeck.usedCardNo;
+                    this.field.putCard(posArr[i], this.gameDeck.deck[idx]);
+                }
+            } while (!this.field.existSET());
         }
     }
 }
@@ -233,6 +279,10 @@ public class gameClass {
     }
 
     public static boolean isSet(Card card1, Card card2, Card card3){
+        if (card1.isEmpty() || card2.isEmpty() || card3.isEmpty()) {
+            return false;
+        }
+
         boolean colorSatisfied = checkCondition(card1, card2, card3, (a, b) -> a.color == b.color);
         boolean numberSatisfied = checkCondition(card1, card2, card3, (a, b) -> a.number == b.number);
         boolean shapeSatisfied = checkCondition(card1, card2, card3, (a, b) -> a.shape == b.shape);
