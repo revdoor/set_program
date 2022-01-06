@@ -20,4 +20,6 @@ public final class IdentifierConstant {
     public static final int STATUS_UNUSED = 0;
     public static final int STATUS_ON_FIELD = 1;
     public static final int STATUS_USED = 2;
+
+    public static final int EMPTY = -1;
 }

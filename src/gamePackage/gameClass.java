@@ -38,6 +38,16 @@ class CardDeck {
     }
 }
 
+class EmptyCard extends Card {
+    EmptyCard(){
+        super(IdentifierConstant.EMPTY,
+                IdentifierConstant.EMPTY,
+                IdentifierConstant.EMPTY,
+                IdentifierConstant.EMPTY);
+        this.status = IdentifierConstant.EMPTY;
+    }
+}
+
 class Player {
     String name;
     int score;
@@ -76,6 +86,14 @@ class DefaultGameResultChecker implements GameResultChecker{
 
 class GameField {
     Card[] cardOnField = new Card[12];
+    EmptyCard[] emptyCards = new EmptyCard[12];
+
+    GameField() {
+        for(int i = 0; i < 12; i++){
+            this.emptyCards[i] = new EmptyCard();
+            this.cardOnField[i] = this.emptyCards[i];
+        }
+    }
 }
 
 class SetGame {
