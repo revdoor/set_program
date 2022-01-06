@@ -1,5 +1,7 @@
 package gamePackage;
 
+import java.util.*;
+
 /*
  * Classes about Set game
  * includes gamePackage.Card, gamePackage.CardDeck, Field, ...
@@ -7,7 +9,10 @@ package gamePackage;
  * @author revdoor
  */
 
-class Card {
+import static gamePackage.gameClass.isSet;
+import static gamePackage.gameClass.toPos;
+
+class Card implements Comparable<Card>{
     int color, number, shape, shadow;
     int status;
 
@@ -18,6 +23,15 @@ class Card {
         this.shadow = shadow;
         this.status = IdentifierConstant.STATUS_UNUSED;
     }
+
+    boolean isEmpty() {
+        return false;
+    }
+
+    @Override
+    public int compareTo(Card card) {
+        return Integer.compare(this.status, card.status);
+    }
 }
 
 interface CardAttributeCheck{
@@ -26,6 +40,7 @@ interface CardAttributeCheck{
 
 class CardDeck {
     Card[] deck = new Card[81];
+    int usedCardNo;
 
     CardDeck(){
         for(int i = 0; i < 81; i++){
@@ -35,6 +50,15 @@ class CardDeck {
             int shadow = i%3;
             this.deck[i] = new Card(color, number, shape, shadow);
         }
+
+        usedCardNo = 0;
+    }
+
+    void shuffleDeck() {
+        List<Card> list = Arrays.asList(this.deck);
+        Collections.shuffle(list);
+        Collections.sort(list);
+        list.toArray(this.deck);
     }
 }
 
@@ -45,6 +69,10 @@ class EmptyCard extends Card {
                 IdentifierConstant.EMPTY,
                 IdentifierConstant.EMPTY);
         this.status = IdentifierConstant.EMPTY;
+    }
+
+    boolean isEmpty() {
+        return true;
     }
 }
 
@@ -84,6 +112,20 @@ class DefaultGameResultChecker implements GameResultChecker{
     }
 }
 
+class Pos {
+    int row;
+    int col;
+
+    Pos(int row, int col) {
+        this.row = row;
+        this.col = col;
+    }
+
+    int toIdx() {
+        return this.row * 4 + this.col;
+    }
+}
+
 class GameField {
     Card[] cardOnField = new Card[12];
     EmptyCard[] emptyCards = new EmptyCard[12];
@@ -95,14 +137,20 @@ class GameField {
         }
     }
 
-    void putCard(int row, int col, Card card) {
-        this.cardOnField[row*4+col] = card;
+    Card getCard(int idx) {
+        return this.cardOnField[idx];
+    }
+
+    void putCard(Pos pos, Card card) {
+        int idx = pos.toIdx();
+        this.cardOnField[idx] = card;
         card.status = IdentifierConstant.STATUS_ON_FIELD;
     }
 
-    void removeCard(int row, int col) {
-        this.cardOnField[row*4+col].status = IdentifierConstant.STATUS_USED;
-        this.cardOnField[row*4+col] = this.emptyCards[row*4+col];
+    void removeCard(Pos pos) {
+        int idx = pos.toIdx();
+        this.cardOnField[idx].status = IdentifierConstant.STATUS_USED;
+        this.cardOnField[idx] = this.emptyCards[idx];
     }
 }
 
@@ -114,6 +162,57 @@ class SetGame {
     SetGame() {
         this.gameDeck = new CardDeck();
         this.field = new GameField();
+
+        initializeField();
+    }
+
+    void initializeField() {
+        this.gameDeck.shuffleDeck();
+
+        for (int idx = 0; idx < 12; idx++){
+            this.field.putCard(toPos(idx), this.gameDeck.deck[idx]);
+        }
+    }
+
+    void SETDeclaration(int player_no, Pos pos1, Pos pos2, Pos pos3) {
+        Card card1 = this.field.getCard(pos1.toIdx());
+        Card card2 = this.field.getCard(pos2.toIdx());
+        Card card3 = this.field.getCard(pos3.toIdx());
+
+        if (card1.isEmpty() || card2.isEmpty() || card3.isEmpty()) {
+            badSETDeclaration(player_no);
+            return;
+        }
+
+        if (!isSet(card1, card2, card3)) {
+            badSETDeclaration(player_no);
+            return;
+        }
+
+        goodSETDeclaration(player_no);
+        refillCard(pos1, pos2, pos3);
+    }
+
+    void badSETDeclaration(int player_no) {
+        this.players[player_no].penalty += 1;
+    }
+
+    void goodSETDeclaration(int player_no) {
+        this.players[player_no].score += 1;
+    }
+
+    void refillCard(Pos pos1, Pos pos2, Pos pos3) {
+        this.field.removeCard(pos1);
+        this.field.removeCard(pos2);
+        this.field.removeCard(pos3);
+
+        this.gameDeck.usedCardNo += 3;
+        this.gameDeck.shuffleDeck();
+
+        for (int i = 0; i < 3; i++) {
+            int idx = i + this.gameDeck.usedCardNo;
+            this.field.putCard(toPos(idx), this.gameDeck.deck[idx]);
+        }
     }
 }
 
@@ -140,6 +239,10 @@ public class gameClass {
         boolean shadowSatisfied = checkCondition(card1, card2, card3, (a, b) -> a.shadow == b.shadow);
 
         return colorSatisfied && numberSatisfied && shapeSatisfied && shadowSatisfied;
+    }
+
+    public static Pos toPos(int idx) {
+        return new Pos(idx/4, idx%4);
     }
 
     public static void main(String[] args){
