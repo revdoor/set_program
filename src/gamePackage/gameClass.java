@@ -144,10 +144,6 @@ class Pos {
         this.row = row;
         this.col = col;
     }
-
-    int toIdx() {
-        return this.row * 4 + this.col;
-    }
 }
 
 class GameField {
@@ -166,12 +162,12 @@ class GameField {
     }
 
     void putCard(Pos pos, Card card) {
-        int idx = pos.toIdx();
+        int idx = posToIdx(pos);
         this.cardOnField[idx] = card;
     }
 
     void removeCard(Pos pos) {
-        int idx = pos.toIdx();
+        int idx = posToIdx(pos);
         this.cardOnField[idx].statusChange(IdentifierConstant.STATUS_USED);
         this.cardOnField[idx] = this.emptyCards[idx];
     }
@@ -208,15 +204,15 @@ class SetGame {
         this.gameDeck.shuffleDeck();
 
         for (int idx = 0; idx < 12; idx++){
-            this.field.putCard(toPos(idx), this.gameDeck.deck[idx]);
+            this.field.putCard(idxToPos(idx), this.gameDeck.deck[idx]);
             this.gameDeck.deck[idx].statusChange(IdentifierConstant.STATUS_ON_FIELD);
         }
     }
 
     void SETDeclaration(int player_no, Pos pos1, Pos pos2, Pos pos3) {
-        Card card1 = this.field.getCard(pos1.toIdx());
-        Card card2 = this.field.getCard(pos2.toIdx());
-        Card card3 = this.field.getCard(pos3.toIdx());
+        Card card1 = this.field.getCard(posToIdx(pos1));
+        Card card2 = this.field.getCard(posToIdx(pos2));
+        Card card3 = this.field.getCard(posToIdx(pos3));
 
         if (isEmpty(card1) || isEmpty(card2) || isEmpty(card3)) {
             badSETDeclaration(player_no);
@@ -266,7 +262,7 @@ class SetGame {
             } while (!this.field.existSET());
 
             for (int idx = 0; idx < 3; idx++)
-                this.field.getCard(posArr[idx].toIdx()).statusChange(IdentifierConstant.STATUS_ON_FIELD);
+                this.field.getCard(posToIdx(posArr[idx])).statusChange(IdentifierConstant.STATUS_ON_FIELD);
         }
     }
 
@@ -312,7 +308,11 @@ public class gameClass {
         return colorSatisfied && numberSatisfied && shapeSatisfied && shadingSatisfied;
     }
 
-    public static Pos toPos(int idx) {
+    public static int posToIdx(Pos pos) {
+        return pos.row * 4 + pos.col;
+    }
+
+    public static Pos idxToPos(int idx) {
         return new Pos(idx/4, idx%4);
     }
 
