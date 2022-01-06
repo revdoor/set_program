@@ -56,7 +56,7 @@ interface GameResultChecker{
     boolean draw(Player p1, Player p2);
 }
 
-class DefaultGameResultCheck implements GameResultChecker{
+class DefaultGameResultChecker implements GameResultChecker{
     @Override
     public boolean p1Win(Player p1, Player p2) {
         int score1 = p1.score - p1.penalty;
