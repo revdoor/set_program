@@ -9,23 +9,18 @@ import java.util.*;
  * @author revdoor
  */
 
-import static gamePackage.gameClass.isSet;
-import static gamePackage.gameClass.toPos;
+import static gamePackage.gameClass.*;
 
 class Card implements Comparable<Card>{
-    int color, number, shape, shadow;
+    int color, number, shape, shading;
     int status;
 
-    Card(int color, int number, int shape, int shadow){
+    Card(int color, int number, int shape, int shading){
         this.color = color;
         this.number = number;
         this.shape = shape;
-        this.shadow = shadow;
+        this.shading = shading;
         this.status = IdentifierConstant.STATUS_UNUSED;
-    }
-
-    boolean isEmpty() {
-        return false;
     }
 
     @Override
@@ -47,8 +42,8 @@ class CardDeck {
             int color = i/27;
             int number = i%27/9;
             int shape = i%9/3;
-            int shadow = i%3;
-            this.deck[i] = new Card(color, number, shape, shadow);
+            int shading = i%3;
+            this.deck[i] = new Card(color, number, shape, shading);
         }
 
         usedCardNo = 0;
@@ -91,10 +86,6 @@ class EmptyCard extends Card {
                 IdentifierConstant.EMPTY,
                 IdentifierConstant.EMPTY);
         this.status = IdentifierConstant.EMPTY;
-    }
-
-    boolean isEmpty() {
-        return true;
     }
 }
 
@@ -222,7 +213,7 @@ class SetGame {
         Card card2 = this.field.getCard(pos2.toIdx());
         Card card3 = this.field.getCard(pos3.toIdx());
 
-        if (card1.isEmpty() || card2.isEmpty() || card3.isEmpty()) {
+        if (isEmpty(card1) || isEmpty(card2) || isEmpty(card3)) {
             badSETDeclaration(player_no);
             return;
         }
@@ -271,6 +262,10 @@ class SetGame {
             } while (!this.field.existSET());
         }
     }
+
+    boolean gameIsFinished() {
+        return this.gameFinished;
+    }
 }
 
 class SetGameForTwo extends SetGame {
@@ -284,6 +279,10 @@ class SetGameForTwo extends SetGame {
 }
 
 public class gameClass {
+    public static boolean isEmpty(Card card) {
+        return card.getClass().getName().equals("gamePackage.EmptyCard");
+    }
+
     public static boolean checkCondition(Card card1, Card card2, Card card3, CardAttributeCheck cac){
         boolean isSame = (cac.isSame(card1, card2)) && (cac.isSame(card2, card3));
         boolean isDifferent = (!cac.isSame(card1, card2))
@@ -294,16 +293,16 @@ public class gameClass {
     }
 
     public static boolean isSet(Card card1, Card card2, Card card3){
-        if (card1.isEmpty() || card2.isEmpty() || card3.isEmpty()) {
+        if (isEmpty(card1) || isEmpty(card2) || isEmpty(card3)) {
             return false;
         }
 
         boolean colorSatisfied = checkCondition(card1, card2, card3, (a, b) -> a.color == b.color);
         boolean numberSatisfied = checkCondition(card1, card2, card3, (a, b) -> a.number == b.number);
         boolean shapeSatisfied = checkCondition(card1, card2, card3, (a, b) -> a.shape == b.shape);
-        boolean shadowSatisfied = checkCondition(card1, card2, card3, (a, b) -> a.shadow == b.shadow);
+        boolean shadingSatisfied = checkCondition(card1, card2, card3, (a, b) -> a.shading == b.shading);
 
-        return colorSatisfied && numberSatisfied && shapeSatisfied && shadowSatisfied;
+        return colorSatisfied && numberSatisfied && shapeSatisfied && shadingSatisfied;
     }
 
     public static Pos toPos(int idx) {
@@ -313,14 +312,10 @@ public class gameClass {
     public static void main(String[] args){
         SetGameForTwo game = new SetGameForTwo("Alice", "Bob");
 
-        int color = game.gameDeck.deck[35].color;
-        int number = game.gameDeck.deck[35].number;
-        int shape = game.gameDeck.deck[35].shape;
-        int shadow = game.gameDeck.deck[35].shadow;
+        EmptyCard c = new EmptyCard();
 
-        System.out.println(color);
-        System.out.println(number);
-        System.out.println(shape);
-        System.out.println(shadow);
+        System.out.println(game.field.cardOnField[0].getClass().getName());
+        System.out.println(c.getClass().getName());
+        System.out.println(isEmpty(c));
     }
 }

@@ -13,9 +13,9 @@ public final class IdentifierConstant {
     public static final int SHAPE_DIAMOND = 1;
     public static final int SHAPE_WAVE = 2;
 
-    public static final int SHADOW_EMPTY = 0;
-    public static final int SHADOW_LINE = 1;
-    public static final int SHADOW_FILL = 2;
+    public static final int SHADING_EMPTY = 0;
+    public static final int SHADING_LINE = 1;
+    public static final int SHADING_FILLED = 2;
 
     public static final int STATUS_UNUSED = 0;
     public static final int STATUS_ON_FIELD = 1;
