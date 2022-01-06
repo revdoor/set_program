@@ -23,7 +23,7 @@ class Card implements Comparable<Card>{
         this.status = IdentifierConstant.STATUS_UNUSED;
     }
 
-    void status_change(int status) {
+    void statusChange(int status) {
         this.status = status;
     }
 
@@ -172,7 +172,7 @@ class GameField {
 
     void removeCard(Pos pos) {
         int idx = pos.toIdx();
-        this.cardOnField[idx].status = IdentifierConstant.STATUS_USED;
+        this.cardOnField[idx].statusChange(IdentifierConstant.STATUS_USED);
         this.cardOnField[idx] = this.emptyCards[idx];
     }
 
@@ -209,7 +209,7 @@ class SetGame {
 
         for (int idx = 0; idx < 12; idx++){
             this.field.putCard(toPos(idx), this.gameDeck.deck[idx]);
-            this.gameDeck.deck[idx].status_change(IdentifierConstant.STATUS_ON_FIELD);
+            this.gameDeck.deck[idx].statusChange(IdentifierConstant.STATUS_ON_FIELD);
         }
     }
 
@@ -266,7 +266,7 @@ class SetGame {
             } while (!this.field.existSET());
 
             for (int idx = 0; idx < 3; idx++)
-                this.field.getCard(posArr[idx].toIdx()).status_change(IdentifierConstant.STATUS_ON_FIELD);
+                this.field.getCard(posArr[idx].toIdx()).statusChange(IdentifierConstant.STATUS_ON_FIELD);
         }
     }
 
