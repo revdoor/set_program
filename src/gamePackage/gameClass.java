@@ -29,6 +29,7 @@ class Card implements Comparable<Card>{
     }
 }
 
+@FunctionalInterface
 interface CardAttributeCheck{
     boolean isSame(Card card1, Card card2);
 }
