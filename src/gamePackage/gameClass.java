@@ -3,7 +3,7 @@ package gamePackage;
 import java.util.*;
 
 /*
- * Classes about Set game
+ * Classes about SET game
  * includes gamePackage.Card, gamePackage.CardDeck, Field, ...
  *
  * @author revdoor
@@ -69,7 +69,7 @@ class CardDeck {
         for(int i = usedCardNo; i < 79; i++) {
             for(int j = i+1; j < 80; j++) {
                 for(int k = j+1; k < 81; k++) {
-                    if (isSet(this.deck[i], this.deck[j], this.deck[k])) {
+                    if (isSET(this.deck[i], this.deck[j], this.deck[k])) {
                         return true;
                     }
                 }
@@ -176,7 +176,7 @@ class GameField {
         for (int i = 0; i < 10; i++) {
             for (int j = i+1; j < 11; j++) {
                 for (int k = j+1; k < 12; k++) {
-                    if (isSet(this.cardOnField[i], this.cardOnField[j], this.cardOnField[k])) {
+                    if (isSET(this.cardOnField[i], this.cardOnField[j], this.cardOnField[k])) {
                         return true;
                     }
                 }
@@ -186,13 +186,13 @@ class GameField {
     }
 }
 
-class SetGame {
+class SETGame {
     CardDeck gameDeck;
     GameField field;
     Player[] players;
     boolean gameFinished;
 
-    SetGame() {
+    SETGame() {
         this.gameDeck = new CardDeck();
         this.field = new GameField();
         this.gameFinished = false;
@@ -219,7 +219,7 @@ class SetGame {
             return;
         }
 
-        if (!isSet(card1, card2, card3)) {
+        if (!isSET(card1, card2, card3)) {
             badSETDeclaration(player_no);
             return;
         }
@@ -271,8 +271,8 @@ class SetGame {
     }
 }
 
-class SetGameForTwo extends SetGame {
-    SetGameForTwo(String name1, String name2) {
+class SETGameForTwo extends SETGame {
+    SETGameForTwo(String name1, String name2) {
         this.players = new Player[]{new Player(name1), new Player(name2)};
     }
 
@@ -295,7 +295,7 @@ public class gameClass {
         return isSame || isDifferent;
     }
 
-    public static boolean isSet(Card card1, Card card2, Card card3){
+    public static boolean isSET(Card card1, Card card2, Card card3){
         if (isEmpty(card1) || isEmpty(card2) || isEmpty(card3)) {
             return false;
         }
@@ -317,7 +317,7 @@ public class gameClass {
     }
 
     public static void main(String[] args){
-        SetGameForTwo game = new SetGameForTwo("Alice", "Bob");
+        SETGameForTwo game = new SETGameForTwo("Alice", "Bob");
 
         EmptyCard c = new EmptyCard();
 
