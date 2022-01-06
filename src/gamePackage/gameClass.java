@@ -38,8 +38,64 @@ class CardDeck {
     }
 }
 
+class Player {
+    String name;
+    int score;
+    int penalty;
+
+    Player(String name){
+        this.name = name;
+        this.score = 0;
+        this.penalty = 0;
+    }
+}
+
+interface GameResultChecker{
+    boolean p1Win(Player p1, Player p2);
+    boolean p2Win(Player p1, Player p2);
+    boolean draw(Player p1, Player p2);
+}
+
+class DefaultGameResultCheck implements GameResultChecker{
+    @Override
+    public boolean p1Win(Player p1, Player p2) {
+        int score1 = p1.score - p1.penalty;
+        int score2 = p2.score - p2.penalty;
+
+        return score1 > score2;
+    }
+
+    public boolean p2Win(Player p1, Player p2) {
+        return p1Win(p2, p1);
+    }
+
+    public boolean draw(Player p1, Player p2) {
+        return !p1Win(p1, p2) && !p2Win(p1, p2);
+    }
+}
+
+class GameField {
+    Card[] cardOnField = new Card[12];
+}
+
+class SetGame {
+    CardDeck gameDeck;
+    GameField field;
+    Player[] players;
+
+    SetGame() {
+        this.gameDeck = new CardDeck();
+    }
+}
+
+class SetGameForTwo extends SetGame {
+    SetGameForTwo(String name1, String name2) {
+        this.players = new Player[]{new Player(name1), new Player(name2)};
+    }
+}
+
 public class gameClass {
-    public boolean checkCondition(Card card1, Card card2, Card card3, CardAttributeCheck cac){
+    public static boolean checkCondition(Card card1, Card card2, Card card3, CardAttributeCheck cac){
         boolean isSame = (cac.isSame(card1, card2)) && (cac.isSame(card2, card3));
         boolean isDifferent = (!cac.isSame(card1, card2))
                 && (!cac.isSame(card2, card3))
@@ -48,12 +104,26 @@ public class gameClass {
         return isSame || isDifferent;
     }
 
-    public boolean isSet(Card card1, Card card2, Card card3){
+    public static boolean isSet(Card card1, Card card2, Card card3){
         boolean colorSatisfied = checkCondition(card1, card2, card3, (a, b) -> a.color == b.color);
         boolean numberSatisfied = checkCondition(card1, card2, card3, (a, b) -> a.number == b.number);
         boolean shapeSatisfied = checkCondition(card1, card2, card3, (a, b) -> a.shape == b.shape);
         boolean shadowSatisfied = checkCondition(card1, card2, card3, (a, b) -> a.shadow == b.shadow);
 
         return colorSatisfied && numberSatisfied && shapeSatisfied && shadowSatisfied;
+    }
+
+    public static void main(String[] args){
+        SetGameForTwo game = new SetGameForTwo("Alice", "Bob");
+
+        int color = game.gameDeck.deck[35].color;
+        int number = game.gameDeck.deck[35].number;
+        int shape = game.gameDeck.deck[35].shape;
+        int shadow = game.gameDeck.deck[35].shadow;
+
+        System.out.println(color);
+        System.out.println(number);
+        System.out.println(shape);
+        System.out.println(shadow);
     }
 }
