@@ -94,6 +94,16 @@ class GameField {
             this.cardOnField[i] = this.emptyCards[i];
         }
     }
+
+    void putCard(int row, int col, Card card) {
+        this.cardOnField[row*4+col] = card;
+        card.status = IdentifierConstant.STATUS_ON_FIELD;
+    }
+
+    void removeCard(int row, int col) {
+        this.cardOnField[row*4+col].status = IdentifierConstant.STATUS_USED;
+        this.cardOnField[row*4+col] = this.emptyCards[row*4+col];
+    }
 }
 
 class SetGame {
@@ -103,6 +113,7 @@ class SetGame {
 
     SetGame() {
         this.gameDeck = new CardDeck();
+        this.field = new GameField();
     }
 }
 
