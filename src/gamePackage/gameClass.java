@@ -114,6 +114,12 @@ interface GameResultChecker{
     boolean p1Win(Player p1, Player p2);
     boolean p2Win(Player p1, Player p2);
     boolean draw(Player p1, Player p2);
+
+    default int winner(Player p1, Player p2) {
+        if (p1Win(p1, p2)) return 1;
+        if (p2Win(p1, p2)) return 2;
+        return 0;
+    }
 }
 
 class DefaultGameResultChecker implements GameResultChecker{
@@ -193,10 +199,12 @@ class SetGame {
     CardDeck gameDeck;
     GameField field;
     Player[] players;
+    boolean gameFinished;
 
     SetGame() {
         this.gameDeck = new CardDeck();
         this.field = new GameField();
+        this.gameFinished = false;
 
         initializeField();
     }
@@ -228,6 +236,9 @@ class SetGame {
         if (this.gameDeck.existSET()) {
             removeCards(pos1, pos2, pos3);
             refillCards(pos1, pos2, pos3);
+        }
+        else {
+            this.gameFinished = true;
         }
     }
 
@@ -265,6 +276,10 @@ class SetGame {
 class SetGameForTwo extends SetGame {
     SetGameForTwo(String name1, String name2) {
         this.players = new Player[]{new Player(name1), new Player(name2)};
+    }
+
+    int gameWinner(GameResultChecker grc) {
+        return grc.winner(this.players[0], this.players[1]);
     }
 }
 
