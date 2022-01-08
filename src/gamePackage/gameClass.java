@@ -23,14 +23,17 @@ class Card implements Comparable<Card>{
         this.status = IdentifierConstant.STATUS_UNUSED;
     }
 
-    void statusChange(int status) {
-        this.status = status;
+    void statusChange(int status) {this.status = status;}
+
+    String cardString() {
+        return IdentifierConstant.STR_COLOR[this.color] +
+                IdentifierConstant.STR_NUMBER[this.number] +
+                IdentifierConstant.STR_SHAPE[this.shape] +
+                IdentifierConstant.STR_SHADING[this.shading];
     }
 
     @Override
-    public int compareTo(Card card) {
-        return Integer.compare(this.status, card.status);
-    }
+    public int compareTo(Card card) {return Integer.compare(this.status, card.status);}
 }
 
 @FunctionalInterface
@@ -79,9 +82,7 @@ class CardDeck {
         return false;
     }
 
-    boolean remainsUnusedCard() {
-        return this.usedCardNo + 12 < 81;
-    }
+    boolean remainsUnusedCard() {return this.usedCardNo + 12 < 81;}
 }
 
 class EmptyCard extends Card {
@@ -91,6 +92,11 @@ class EmptyCard extends Card {
                 IdentifierConstant.EMPTY,
                 IdentifierConstant.EMPTY);
         this.status = IdentifierConstant.EMPTY;
+    }
+
+    @Override
+    String cardString() {
+        return "    ";
     }
 }
 
@@ -127,13 +133,9 @@ class DefaultGameResultChecker implements GameResultChecker{
         return score1 > score2;
     }
 
-    public boolean p2Win(Player p1, Player p2) {
-        return p1Win(p2, p1);
-    }
+    public boolean p2Win(Player p1, Player p2) {return p1Win(p2, p1);}
 
-    public boolean draw(Player p1, Player p2) {
-        return !p1Win(p1, p2) && !p2Win(p1, p2);
-    }
+    public boolean draw(Player p1, Player p2) {return !p1Win(p1, p2) && !p2Win(p1, p2);}
 }
 
 class Pos {
@@ -157,9 +159,7 @@ class GameField {
         }
     }
 
-    Card getCard(int idx) {
-        return this.cardOnField[idx];
-    }
+    Card getCard(int idx) {return this.cardOnField[idx];}
 
     void putCard(Pos pos, Card card) {
         int idx = posToIdx(pos);
@@ -234,13 +234,9 @@ class SETGame {
         }
     }
 
-    void badSETDeclaration(int player_no) {
-        this.players[player_no].penalty += 1;
-    }
+    void badSETDeclaration(int player_no) {this.players[player_no].penalty += 1;}
 
-    void goodSETDeclaration(int player_no) {
-        this.players[player_no].score += 1;
-    }
+    void goodSETDeclaration(int player_no) {this.players[player_no].score += 1;}
 
     void removeCards(Pos pos1, Pos pos2, Pos pos3) {
         this.field.removeCard(pos1);
@@ -266,25 +262,17 @@ class SETGame {
         }
     }
 
-    boolean gameIsFinished() {
-        return this.gameFinished;
-    }
+    boolean gameIsFinished() {return this.gameFinished;}
 }
 
 class SETGameForTwo extends SETGame {
-    SETGameForTwo(String name1, String name2) {
-        this.players = new Player[]{new Player(name1), new Player(name2)};
-    }
+    SETGameForTwo(String name1, String name2) {this.players = new Player[]{new Player(name1), new Player(name2)};}
 
-    int gameWinner(GameResultChecker grc) {
-        return grc.winner(this.players[0], this.players[1]);
-    }
+    int gameWinner(GameResultChecker grc) {return grc.winner(this.players[0], this.players[1]);}
 }
 
 public class gameClass {
-    public static boolean isEmpty(Card card) {
-        return card.getClass().getName().equals("gamePackage.EmptyCard");
-    }
+    public static boolean isEmpty(Card card) {return card.getClass().getName().equals("gamePackage.EmptyCard");}
 
     public static boolean checkCondition(Card card1, Card card2, Card card3, CardAttributeCheck cac){
         boolean isSame = (cac.isSame(card1, card2)) && (cac.isSame(card2, card3));
@@ -308,13 +296,9 @@ public class gameClass {
         return colorSatisfied && numberSatisfied && shapeSatisfied && shadingSatisfied;
     }
 
-    public static int posToIdx(Pos pos) {
-        return pos.row * 4 + pos.col;
-    }
+    public static int posToIdx(Pos pos) {return pos.row * 4 + pos.col;}
 
-    public static Pos idxToPos(int idx) {
-        return new Pos(idx/4, idx%4);
-    }
+    public static Pos idxToPos(int idx) {return new Pos(idx/4, idx%4);}
 
     public static void main(String[] args){
         SETGameForTwo game = new SETGameForTwo("Alice", "Bob");

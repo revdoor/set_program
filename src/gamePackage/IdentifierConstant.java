@@ -22,4 +22,9 @@ public final class IdentifierConstant {
     public static final int STATUS_USED = 2;
 
     public static final int EMPTY = -1;
+
+    public static final String[] STR_COLOR = {"R", "G", "P"};
+    public static final String[] STR_NUMBER = {"1", "2", "3"};
+    public static final String[] STR_SHAPE = {"R", "D", "W"};
+    public static final String[] STR_SHADING = {"E", "L", "F"};
 }
