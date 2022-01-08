@@ -110,6 +110,10 @@ class Player {
         this.score = 0;
         this.penalty = 0;
     }
+
+    String playerString() {
+        return this.name + " " + Integer.toString(this.score) + " " + Integer.toString(this.penalty);
+    }
 }
 
 interface GameResultChecker{
@@ -201,30 +205,33 @@ class SETGame {
     }
 
     void initializeField() {
-        this.gameDeck.shuffleDeck();
+        do {
+            this.gameDeck.shuffleDeck();
+            for (int idx = 0; idx < 12; idx++) {
+                this.field.putCard(idxToPos(idx), this.gameDeck.deck[idx]);
+            }
+        } while (!this.field.existSET());
 
-        for (int idx = 0; idx < 12; idx++){
-            this.field.putCard(idxToPos(idx), this.gameDeck.deck[idx]);
+        for (int idx = 0; idx < 12; idx++)
             this.gameDeck.deck[idx].statusChange(IdentifierConstant.STATUS_ON_FIELD);
-        }
     }
 
-    void SETDeclaration(int player_no, Pos pos1, Pos pos2, Pos pos3) {
+    void SETDeclaration(int playerNo, Pos pos1, Pos pos2, Pos pos3) {
         Card card1 = this.field.getCard(posToIdx(pos1));
         Card card2 = this.field.getCard(posToIdx(pos2));
         Card card3 = this.field.getCard(posToIdx(pos3));
 
         if (isEmpty(card1) || isEmpty(card2) || isEmpty(card3)) {
-            badSETDeclaration(player_no);
+            badSETDeclaration(playerNo);
             return;
         }
 
         if (!isSET(card1, card2, card3)) {
-            badSETDeclaration(player_no);
+            badSETDeclaration(playerNo);
             return;
         }
 
-        goodSETDeclaration(player_no);
+        goodSETDeclaration(playerNo);
         if (this.gameDeck.existSET()) {
             removeCards(pos1, pos2, pos3);
             refillCards(pos1, pos2, pos3);
@@ -234,9 +241,9 @@ class SETGame {
         }
     }
 
-    void badSETDeclaration(int player_no) {this.players[player_no].penalty += 1;}
+    void badSETDeclaration(int playerNo) {this.players[playerNo].penalty += 1;}
 
-    void goodSETDeclaration(int player_no) {this.players[player_no].score += 1;}
+    void goodSETDeclaration(int playerNo) {this.players[playerNo].score += 1;}
 
     void removeCards(Pos pos1, Pos pos2, Pos pos3) {
         this.field.removeCard(pos1);
@@ -266,7 +273,9 @@ class SETGame {
 }
 
 class SETGameForTwo extends SETGame {
-    SETGameForTwo(String name1, String name2) {this.players = new Player[]{new Player(name1), new Player(name2)};}
+    SETGameForTwo(String name1, String name2) {
+        this.players = new Player[]{new Player(name1), new Player(name2)};
+    }
 
     int gameWinner(GameResultChecker grc) {return grc.winner(this.players[0], this.players[1]);}
 }
@@ -275,7 +284,7 @@ public class gameClass {
     public static boolean isEmpty(Card card) {return card.getClass().getName().equals("gamePackage.EmptyCard");}
 
     public static boolean checkCondition(Card card1, Card card2, Card card3, CardAttributeCheck cac){
-        boolean isSame = (cac.isSame(card1, card2)) && (cac.isSame(card2, card3));
+        boolean isSame = (cac.isSame(card1, card2)) && (cac.isSame(card2, card3)) && (cac.isSame(card3, card1));
         boolean isDifferent = (!cac.isSame(card1, card2))
                 && (!cac.isSame(card2, card3))
                 && (!cac.isSame(card3, card1));
@@ -299,14 +308,4 @@ public class gameClass {
     public static int posToIdx(Pos pos) {return pos.row * 4 + pos.col;}
 
     public static Pos idxToPos(int idx) {return new Pos(idx/4, idx%4);}
-
-    public static void main(String[] args){
-        SETGameForTwo game = new SETGameForTwo("Alice", "Bob");
-
-        EmptyCard c = new EmptyCard();
-
-        System.out.println(game.field.cardOnField[0].getClass().getName());
-        System.out.println(c.getClass().getName());
-        System.out.println(isEmpty(c));
-    }
 }
