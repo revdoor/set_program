@@ -9,7 +9,7 @@ import java.util.*;
  * @author revdoor
  */
 
-import static gamePackage.gameClass.*;
+import static gamePackage.GameClass.*;
 
 class Card implements Comparable<Card>{
     int color, number, shape, shading;
@@ -271,7 +271,7 @@ class SETGameForTwo extends SETGame {
     int gameWinner(GameResultChecker grc) {return grc.winner(this.players[0], this.players[1]);}
 }
 
-public class gameClass {
+public class GameClass {
     public static boolean isEmpty(Card card) {return card.getClass().getName().equals("gamePackage.EmptyCard");}
 
     public static boolean checkCondition(Card card1, Card card2, Card card3, CardAttributeCheck cac){
